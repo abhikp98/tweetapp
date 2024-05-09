@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView, FormView, CreateView, ListView, View
+from .models import UserProfile
 
 import user
 from user.models import Posts
@@ -75,6 +76,16 @@ class FeedView(LoginRequiredMixin, ListView):
         if search:
            return qs.filter(user__first_name__icontains=search)
         return qs
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        usr = UserProfile.objects.filter(user=self.request.user)
+        if usr.exists():
+            context['propic'] = usr[0].avatar
+        else:
+            context['propic'] = ""
+        return context
     
 
 
