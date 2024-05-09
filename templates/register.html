@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{%block content %}
+{% for m in messages %}
+{{m}}
+{% endfor %}
+{% if form.errors %}
+{{ form.errors }}
+{% endif %}
+<div class="container">
+
+    <form method="post" action="" class="p-5 bg-secondary">{% csrf_token %}
+        <p>
+            <label>{{ form.username.label}}
+                {{ form.username }}
+            </label>
+        </p>
+        <p>
+            <label>{{ form.first_name.label}}
+                {{ form.first_name }}
+            </label>
+        </p>
+        <p>
+            <label>{{ form.last_name.label}}
+                {{ form.last_name }}
+            </label>
+        </p>
+        <p>
+            <label>{{ form.email.label}}
+                {{ form.email }}
+            </label>
+        </p>
+        <p>
+            <label>{{ form.password1.label}}
+                {{ form.password1 }}
+            </label>
+        </p>
+        <p>
+            <label>{{ form.password2.label}}
+                {{ form.password2 }}
+            </label>
+        </p>
+        <input type="submit" value="Register">
+    </form>
+    {% endblock %}
+</div>

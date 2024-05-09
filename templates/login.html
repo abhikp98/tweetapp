@@ -1,0 +1,29 @@
+{% extends "index.html" %}
+{%block content %}
+Login Page
+{% if form.errors %}
+{{ form.errors }}
+{% endif %}
+<form action="" method="post" class="w-50 mx-auto bg-secondary p-5 rounded-3 shadow-lg text-white">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-6">
+            {{form.as_p}}
+            <input type="submit" class="btn btn-primary w-100" value="Login">
+
+        </div>
+        <div class="col-6 my-auto">
+            <a href="{% url 'register' %}" class="mx-auto">Register</a>
+        </div>
+
+    </div>
+    {% for m in messages %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>{{ m }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+</form>
+
+{% endblock %}
