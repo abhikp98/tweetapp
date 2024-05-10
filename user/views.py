@@ -8,15 +8,16 @@ from django.http import HttpRequest, HttpResponse
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import redirect, render
-from django.views.generic import TemplateView, FormView, CreateView, ListView, View, UpdateView
-from .models import UserProfile
+from django.views.generic import TemplateView, FormView, CreateView, ListView, View, UpdateView, DetailView
 
 import user
+from .models import UserProfile
 from user.models import Posts
 from .forms import Register, LoginForm, UpdateProfile
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import BooleanField, Case, When
 
 # Create your views here.
 
@@ -78,7 +79,14 @@ class FeedView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         print(self.request.path)
         search = self.request.GET.get("q")
-        qs = super().get_queryset().exclude(user=self.request.user)
+        qs = super().get_queryset().filter(user__in=[i for i in UserProfile.objects.get(user=self.request.user).followers.all()])
+        qs = qs.annotate(isLiked=Case(
+            When(likes__in=[self.request.user], then=True),
+            default=False,
+            output_field=BooleanField()
+        )
+                    )
+        print(qs)
         if search:
            return qs.filter(user__first_name__icontains=search)
         return qs
@@ -111,3 +119,18 @@ class ProfileView(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user.userprofile
+    
+
+
+class addLike(DetailView):
+    model = Posts
+    def get(self, request, *args, **kwargs):
+        qry = Posts.objects.get(slug__contains=kwargs.get("slug"))
+        if qry.likes.filter(id=request.user.id).exists():
+            print("yes")
+            qry.likes.remove(request.user)
+        else:
+            print("no")
+            qry.likes.add(request.user)
+        return redirect('feeds')
+        

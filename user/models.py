@@ -1,3 +1,4 @@
+from operator import mod
 from random import randint
 from django.db import models
 from django.contrib.auth.models import User
@@ -20,17 +21,21 @@ class Posts(models.Model):
     slug = models.SlugField(null=True)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-    likes = models.ManyToManyField(User, related_name="likes")
+    likes = models.ManyToManyField(User, related_name="liked_posts", null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    def save(self, force_insert, force_update, using, update_fields):
+    def save(self, **kwrgs):
         uname = self.tweet[:20]
         if Posts.objects.filter(slug=uname).exists():
             extra = str(randint(1, 10000))
             self.slug = slugify(uname) + "-" + extra
         else:
             self.slug = slugify(uname)
-        return super().save(force_insert, force_update, using, update_fields)
+        return super().save()
 
     def __str__(self) -> str:
         return self.tweet
+    
+
+    def likes_count(self):
+        return self.likes.count()

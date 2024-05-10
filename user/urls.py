@@ -26,4 +26,5 @@ urlpatterns = [
     path('feeds/', views.FeedView.as_view(), name="feeds"),
     path('logout/', views.LogoutView.as_view(), name="logout"),
     path('profile/', views.ProfileView.as_view(), name="profile"),
+    path('like/<slug>/', views.addLike.as_view(), name="like")
 ]
