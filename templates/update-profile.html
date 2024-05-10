@@ -1,0 +1,8 @@
+{% include "base.html" %}
+{% include "feed.html" %}
+<div class="container w-50 mx-auto text-center p-5">
+    <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
+        {{form.as_p}}
+        <input type="submit" value="Update">
+    </form>
+</div>

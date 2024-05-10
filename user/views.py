@@ -1,17 +1,19 @@
 from msilib.schema import ListView
+from tkinter import NO
 from urllib import request
+from django.db.models.base import Model as Model
 from django.db.models.query import QuerySet
 from django.forms import BaseModelForm
 from django.http import HttpRequest, HttpResponse
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import redirect, render
-from django.views.generic import TemplateView, FormView, CreateView, ListView, View
+from django.views.generic import TemplateView, FormView, CreateView, ListView, View, UpdateView
 from .models import UserProfile
 
 import user
 from user.models import Posts
-from .forms import Register, LoginForm
+from .forms import Register, LoginForm, UpdateProfile
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -55,10 +57,13 @@ class RegisterView(CreateView):
     template_name = "register.html"
     model = User
     success_url = reverse_lazy('feeds')
-    def get_context_data(self, **kwargs):
-        usr = authenticate(self.request, username=self.kwargs.get('username'), password=self.kwargs.get('password1'))
+    
+    def form_valid(self, form):
+        valid = super().form_valid(form)
+        usr = authenticate(self.request, username=form.cleaned_data.get('username'), password=form.cleaned_data.get('password1'))
         login(self.request, usr)
-        return super().get_context_data(**kwargs)
+        UserProfile.objects.create(user=self.request.user)
+        return valid
 
     def form_invalid(self, form: BaseModelForm) -> HttpResponse:
         messages.error(self.request,"failed to create account")
@@ -71,6 +76,7 @@ class FeedView(LoginRequiredMixin, ListView):
     model = Posts
     template_name = "feed.html"
     def get_queryset(self):
+        print(self.request.path)
         search = self.request.GET.get("q")
         qs = super().get_queryset().exclude(user=self.request.user)
         if search:
@@ -93,3 +99,15 @@ class LogoutView(View):
     def get(self, request):
         logout(request)
         return redirect('login')
+    
+
+class ProfileView(LoginRequiredMixin, UpdateView):
+    model = UserProfile
+    success_url = reverse_lazy('feeds')
+    login_url = '/login/'
+    redirect_field_name = 'login'
+    form_class = UpdateProfile
+    template_name = "update-profile.html"
+
+    def get_object(self, queryset=None):
+        return self.request.user.userprofile

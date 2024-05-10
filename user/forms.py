@@ -1,8 +1,11 @@
 from ast import For
+from dataclasses import fields
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.models import User
+
+from user.models import UserProfile
 
 
 class Register(UserCreationForm):
@@ -37,3 +40,16 @@ class LoginForm(forms.Form):
                    }
             )
         )
+    
+
+
+class UpdateProfile(ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['bio', 'avatar']
+        widget={
+            "bio": forms.TextInput(attrs={"class": "form-control"}),
+            "avatar": forms.FileInput(attrs={"class": "form-control"})
+        }
+
+
