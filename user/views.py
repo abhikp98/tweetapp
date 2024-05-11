@@ -8,7 +8,7 @@ from django.http import HttpRequest, HttpResponse
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import redirect, render
-from django.views.generic import TemplateView, FormView, CreateView, ListView, View, UpdateView, DetailView
+from django.views.generic import TemplateView, FormView, CreateView, ListView, View, UpdateView, DetailView, DeleteView
 
 import user
 from .models import UserProfile
@@ -125,11 +125,17 @@ class addLike(DetailView):
         else:
             print("no")
             qry.likes.add(request.user)
-        return redirect('feeds')
+        return redirect(self.request.META.get('HTTP_REFERER', '/feeds'))
     
 
 class Tweetview(DetailView):
     model = Posts
     template_name = "tweet-details.html"
+
+
+class DeleteTweet(DeleteView):
+    model = Posts
+    template_name = "delete-tweet.html"
+    success_url = reverse_lazy('profile')
 
 

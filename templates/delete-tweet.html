@@ -1,0 +1,5 @@
+{% include "base.html" %}
+Are you sure?
+<form method="post" action="">{% csrf_token %}
+    <input type="submit" value="Delete for ever" class="btn btn-danger">
+</form>

@@ -33,6 +33,7 @@
                         </div>
                         <div class="text-end">
                             {{i.created|timesince}} ago
+                            <a href="{% url 'delete-tweet' i.slug %}"><i class="bi bi-trash3-fill"></i></a>
                         </div>
                     </div>
                 </a>
@@ -41,5 +42,4 @@
         {% endfor %}
 
     </div>
-
 </div>
