@@ -13,18 +13,16 @@ from django.views.generic import TemplateView, FormView, CreateView, ListView, V
 import user
 from .models import UserProfile
 from user.models import Posts
-from .forms import Register, LoginForm, UpdateProfile
+from .forms import CreateTweet, Register, LoginForm, UpdateProfile
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import BooleanField, Case, When
 
-# Create your views here.
 
 class IndexView(TemplateView):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if self.request.user.is_authenticated:
-            print("yes")
             return redirect('feeds')
         return super().get(request, *args, **kwargs)
     template_name = "index.html"
@@ -49,10 +47,6 @@ class LoginView(FormView):
         return render(request,self.template_name,{"form":form})
 
 
-        return super().post(request, *args, **kwargs)
-
-
-
 class RegisterView(CreateView):
     form_class = Register
     template_name = "register.html"
@@ -71,37 +65,31 @@ class RegisterView(CreateView):
         return super().form_invalid(form)
     
 
-class FeedView(LoginRequiredMixin, ListView):
+class FeedView(LoginRequiredMixin, CreateView):
     login_url = "/login/"
     redirect_field_name = "login"
     model = Posts
     template_name = "feed.html"
-    def get_queryset(self):
-        print(self.request.path)
-        search = self.request.GET.get("q")
-        qs = super().get_queryset().filter(user__in=[i for i in UserProfile.objects.get(user=self.request.user).followers.all()])
-        qs = qs.annotate(isLiked=Case(
-            When(likes__in=[self.request.user], then=True),
-            default=False,
-            output_field=BooleanField()
-        )
-                    )
-        print(qs)
-        if search:
-           return qs.filter(user__first_name__icontains=search)
-        return qs
+    success_url = reverse_lazy('feeds')
+    form_class = CreateTweet
     
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        print("came here", form.cleaned_data.get('tweet'))
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        usr = UserProfile.objects.filter(user=self.request.user)
-        if usr.exists():
-            context['propic'] = usr[0].avatar
+        search = self.request.GET.get('search')
+        if search:
+            self.request.session['search'] = search
+            context['posts'] = Posts.objects.filter(user__in=[i for i in UserProfile.objects.get(user=self.request.user).followers.all()]).filter(user__username__icontains=search)
         else:
-            context['propic'] = ""
+            self.request.session.delete('search')
+            print("came hereee")
+            context['posts'] = Posts.objects.filter(user__in=[i for i in UserProfile.objects.get(user=self.request.user).followers.all()])
         return context
     
-
 
 class LogoutView(View):
     def get(self, request):
@@ -111,11 +99,16 @@ class LogoutView(View):
 
 class ProfileView(LoginRequiredMixin, UpdateView):
     model = UserProfile
-    success_url = reverse_lazy('feeds')
+    success_url = reverse_lazy('profile')
     login_url = '/login/'
     redirect_field_name = 'login'
     form_class = UpdateProfile
     template_name = "update-profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['posts'] = Posts.objects.filter(user=self.request.user)
+        return context
 
     def get_object(self, queryset=None):
         return self.request.user.userprofile
@@ -133,4 +126,10 @@ class addLike(DetailView):
             print("no")
             qry.likes.add(request.user)
         return redirect('feeds')
-        
+    
+
+class Tweetview(DetailView):
+    model = Posts
+    template_name = "tweet-details.html"
+
+

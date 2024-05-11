@@ -1,0 +1,26 @@
+{% include "base.html" %}
+<div class="container text-center mt-5">
+    <div class="card shadow rounded-4">
+        <div class="card-body">
+            <h3>{{object}}</h3>
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-6">
+                    <h4>Liked by</h4>
+                    {% for i in object.likes.all %}
+                    <img src="{{i.userprofile.avatar.url}}" width="40" height="40"
+                        style="border-radius: 50%;">{{i.username}}<br>
+                    {%endfor %}
+                </div>
+                <div class="col-6">
+                    Posted on: {{object.created|timesince}} ago
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
