@@ -105,6 +105,11 @@ class ProfileView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['posts'] = Posts.objects.filter(user=self.request.user)
+        uc = 0
+        for i in UserProfile.objects.all():
+            if self.request.user in i.followers.all():
+                uc += 1
+        context['followerscount'] = uc
         return context
 
     def get_object(self, queryset=None):
@@ -150,7 +155,6 @@ class FollowersView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         search = self.request.GET.get("search")
-
         if search is not None:
             context['follow'] = User.objects.filter(username__icontains=search).exclude(id=self.request.user.id).exclude(is_superuser=True)
         return context
@@ -162,6 +166,11 @@ class ViewFollower(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['posts'] = Posts.objects.filter(user__username=self.kwargs.get("userid"))
+        uc = 0
+        for i in UserProfile.objects.all():
+            if self.object.user in i.followers.all():
+                uc += 1
+        context['followerscount'] = uc
         return context
 
     def get_object(self, queryset=None):

@@ -7,10 +7,16 @@
         <div class="card-footer">
             <div class="row">
                 <div class="col-6">
+                    {% if object.likes.all.count != 0 %}
                     <h4>Liked by</h4>
+                    {% else %}
+                    <h4>No likes</h4>
+                    {% endif %}
                     {% for i in object.likes.all %}
-                    <img src="{{i.userprofile.avatar.url}}" width="40" height="40"
-                        style="border-radius: 50%;">{{i.username}}<br>
+                    <a href="{% url 'user-profile' i.username %}">
+                        <img src="{{i.userprofile.avatar.url}}" width="40" height="40"
+                            style="border-radius: 50%;">{{i.username}}<br>
+                    </a>
                     {%endfor %}
                 </div>
                 <div class="col-6">

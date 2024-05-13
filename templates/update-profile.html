@@ -11,7 +11,9 @@
                 <small>Username: {{object.user.username}}</small><br>
                 <small>Name: {{object.user.first_name}} {{object.user.last_name}}</small><br>
                 <small>Email: {{object.user.email}}</small><br>
-                <small>Following: <b>{{object.user.userprofile.followers.count }}</b></small>
+                <small>Following: <b>{{object.user.userprofile.followers.count }}</b></small><br>
+                <small>Followers: <b>{{ followerscount }}</b></small><br>
+                <small>Shoots: <b>{{ posts.count }}</b></small>
             </div>
         </div>
 
