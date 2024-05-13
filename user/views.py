@@ -139,3 +139,17 @@ class DeleteTweet(DeleteView):
     success_url = reverse_lazy('profile')
 
 
+class FollowersView(DetailView):
+    model = UserProfile
+    template_name = "followers.html"
+
+    def get_object(self, queryset=None):
+        return self.request.user.userprofile
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        search = self.request.GET.get("search")
+
+        if search is not None:
+            context['follow'] = User.objects.filter(username__icontains=search).exclude(id=self.request.user.id).exclude(is_superuser=True)
+        return context

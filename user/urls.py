@@ -29,5 +29,6 @@ urlpatterns = [
     path('profile/', views.ProfileView.as_view(), name="profile"),
     path('like/<slug>/', views.addLike.as_view(), name="like"),
     path('<slug>/tweet-view/', views.Tweetview.as_view(), name="viewtweet"),
-    path('<slug>/delete-tweet/', views.DeleteTweet.as_view(), name='delete-tweet')
+    path('<slug>/delete-tweet/', views.DeleteTweet.as_view(), name='delete-tweet'),
+    path('followers/', views.FollowersView.as_view(), name="followers")
 ]

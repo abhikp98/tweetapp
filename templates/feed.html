@@ -1,39 +1,4 @@
-{%extends "base.html" %}
-{% block content %}
-<nav class="navbar navbar-expand-lg navbar-light bg-primary ms-5 me-5 mt-3 rounded-pill">
-    <div class="container-fluid">
-        <a class="navbar-brand text-white ms-3" href="{% url 'feeds' %}">
-            <h3>TweetApp</h3>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll"
-            aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarScroll">
-            <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
-                <!-- <li class="nav-item">
-                    <a class="nav-link active text-white" aria-current="page" href="#">Home</a>
-                </li> -->
-                <!-- <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Link</a>
-                </li> -->
-            </ul>
-            {% if request.path == "/feeds/" %}
-            <form class="d-flex" method="get" action="">
-                <input class="form-control me-2" type="search" name="search" value="{{request.session.search}}"
-                    placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
-            {% endif %}
-
-            <a href="{% url 'profile' %}"><img src="{{ request.user.userprofile.avatar.url }}" width="50" height="50"
-                    style="border-radius: 50%;"></a>
-        </div>
-    </div>
-</nav>
+{% include 'header.html' %}
 {% if request.path == '/feeds/'%}
 <div class="container w-50 shadow-lg p-3 rounded text-center" style="background-color: midnightblue;">
     <div class="col-6 mx-auto">
@@ -79,4 +44,3 @@
     </div>
 
 </div>
-{%endblock %}
