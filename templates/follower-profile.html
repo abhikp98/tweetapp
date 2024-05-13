@@ -1,27 +1,35 @@
-{% include "header.html" %}
-<main>
-    <div class="container w-50 mx-auto p-5 shadow-lg rounded-5 mt-3">
-        <div class="row">
-            <div class="col-6 text-end">
-                <img src="{{request.user.userprofile.avatar.url}}" width="100" height="100" style="border-radius: 50%;">
+{% include 'header.html' %}
+<div class="container">
+    <div class="col-6 mx-auto">
+        <div class="card shadow-lg p-5 rounded-4">
+            <div class="row">
+                <div class="col-4 text-end">
+                    <img src="{{request.user.userprofile.avatar.url}}" width="100" height="100"
+                        style="border-radius: 50%;">
 
 
+                </div>
+                <div class="col-6">
+                    <small>Username: {{object.user.username}}</small><br>
+                    <small>Name: {{object.user.first_name}} {{object.user.last_name}}</small><br>
+                    <small>Email: {{object.user.email}}</small><br>
+                    <small>Following: <b>{{object.user.userprofile.followers.count }}</b></small><br>
+                </div>
+                <div class="col-2">
+                    {% if object.user in request.user.userprofile.followers.all %}
+                    <a class="btn btn-danger" href="{% url 'connect' object.user.username %}"> Unfollow</a>
+                    {%else %}
+                    <a class="btn btn-primary" href="{% url 'connect' object.user.username %}"> Follow</a>
+                    {% endif %}
+
+                </div>
             </div>
-            <div class="col-6">
-                <small>Username: {{object.user.username}}</small><br>
-                <small>Name: {{object.user.first_name}} {{object.user.last_name}}</small><br>
-                <small>Email: {{object.user.email}}</small><br>
-                <small>Following: <b>{{object.user.userprofile.followers.count }}</b></small>
-            </div>
+
         </div>
 
-
-        <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
-            {{form.as_p}}
-            <input type="submit" value="Update" class="btn btn-primary">
-        </form>
     </div>
-</main>
+
+</div>
 <div class="container">
     <div class="row">
         {% for i in posts %}
@@ -47,7 +55,6 @@
                         </div>
                         <div class="text-end">
                             {{i.created|timesince}} ago
-                            <a href="{% url 'delete-tweet' i.slug %}"><i class="bi bi-trash3-fill"></i></a>
                         </div>
                     </div>
                 </a>

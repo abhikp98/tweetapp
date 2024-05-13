@@ -3,14 +3,25 @@
     {% if follow %}
     <h3>Search Results...</h3>
     {% for i in follow %}
-    <img src="{{i.userprofile.avatar.url }}" width="50" height="50" style="border-radius: 50%;">{{i.first_name}}
-    {{i.last_name}}
-    {% if i in object.followers.all %}
-    <a href="{% url 'connect'}"></a>
-    <h5 class="btn btn-danger">Unfollow</h5>
-    {% else %}
-    <h5 class="btn btn-success">Follow</h5>
-    {% endif %}
+    <div class="card m3 shadow">
+        <a href="{% url 'user-profile' i.username %}">
+            <img src="{{i.userprofile.avatar.url }}" width="50" height="50" style="border-radius: 50%;">{{i.first_name}}
+            {{i.last_name}}
+        </a>
+
+
+
+        {% if i in object.followers.all %}
+        <a href="{% url 'connect' i.username %}">
+            <h5 class="btn btn-danger">Unfollow</h5>
+        </a>
+
+        {% else %}
+        <a href="{% url 'connect' i.username %}">
+            <h5 class="btn btn-primary">Follow</h5>
+        </a>
+        {% endif %}
+    </div>
     <br>
     {% endfor %}
     {% endif %}
@@ -22,7 +33,11 @@
     No Following Yet
     {% else %}
     {% for i in object.followers.all %}
-    {{i}}
+    <a href="{% url 'user-profile' i.username %}">
+        <div class="card p-3 w-50">
+            <img src="{{i.userprofile.avatar.url }}" width="50" height="50" style="border-radius: 50%;">{{i}}
+        </div>
+    </a>
     {% endfor %}
     {% endif %}
 </div>

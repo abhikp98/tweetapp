@@ -6,9 +6,10 @@
 {% if form.errors %}
 {{ form.errors }}
 {% endif %}
-<div class="container">
+<div class="container w-25 mx-auto m-3 rounded-3">
 
-    <form method="post" action="" class="p-5 bg-secondary">{% csrf_token %}
+    <form method="post" action="" class="p-5 rounded-3 shadow-lg text-center">{% csrf_token %}
+        <h3 class="text-primary text-center">Registration</h3>
         <p>
             <label>{{ form.username.label}}
                 {{ form.username }}
@@ -39,7 +40,10 @@
                 {{ form.password2 }}
             </label>
         </p>
-        <input type="submit" value="Register">
+        <input type="submit" value="Register" class="btn btn-primary mb-3"><br>
+        Already A User? <a href="{% url 'login' %}" class="link-underline link-underline-opacity-0">Login Here</a>
     </form>
-    {% endblock %}
+
+
 </div>
+{% endblock %}

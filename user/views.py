@@ -9,15 +9,12 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView, FormView, CreateView, ListView, View, UpdateView, DetailView, DeleteView
-
-import user
 from .models import UserProfile
 from user.models import Posts
 from .forms import CreateTweet, Register, LoginForm, UpdateProfile
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import BooleanField, Case, When
 
 
 class IndexView(TemplateView):
@@ -43,7 +40,7 @@ class LoginView(FormView):
             if usr:
                 login(request, usr)
                 return redirect('feeds')
-        messages.error(request,"invalid credentail")
+        messages.error(request,"Username or Password is Incorrect!")
         return render(request,self.template_name,{"form":form})
 
 
@@ -115,7 +112,9 @@ class ProfileView(LoginRequiredMixin, UpdateView):
     
 
 
-class addLike(DetailView):
+class addLike(LoginRequiredMixin, DetailView):
+    login_url = "/login/"
+    redirect_field_name = "login"
     model = Posts
     def get(self, request, *args, **kwargs):
         qry = Posts.objects.get(slug__contains=kwargs.get("slug"))
@@ -133,7 +132,9 @@ class Tweetview(DetailView):
     template_name = "tweet-details.html"
 
 
-class DeleteTweet(DeleteView):
+class DeleteTweet(LoginRequiredMixin, DeleteView):
+    login_url = "/login/"
+    redirect_field_name = "login"
     model = Posts
     template_name = "delete-tweet.html"
     success_url = reverse_lazy('profile')
@@ -153,3 +154,29 @@ class FollowersView(DetailView):
         if search is not None:
             context['follow'] = User.objects.filter(username__icontains=search).exclude(id=self.request.user.id).exclude(is_superuser=True)
         return context
+    
+
+class ViewFollower(DetailView):
+    model = UserProfile
+    template_name = "follower-profile.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['posts'] = Posts.objects.filter(user__username=self.kwargs.get("userid"))
+        return context
+
+    def get_object(self, queryset=None):
+        userprofile = UserProfile.objects.get(user__username=self.kwargs.get("userid"))
+        return userprofile
+    
+
+
+class FollowUnfollow(DetailView):
+    model = UserProfile
+    def get(self, request, *args, **kwargs):
+        userid = User.objects.get(username=kwargs.get('userid'))
+        qry = UserProfile.objects.get(id=request.user.id)
+        if  qry.followers.filter(id=userid.id).exists():
+            qry.followers.remove(userid)
+        else:
+            qry.followers.add(userid)
+        return redirect(self.request.META.get('HTTP_REFERER', '/feeds'))
