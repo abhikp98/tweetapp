@@ -7,7 +7,7 @@ from django.template.defaultfilters import slugify
 # Create your models here.
 
 class UserProfile(models.Model):
-    bio = models.CharField(max_length=50, default="Hey There!")
+    bio = models.CharField(max_length=50, default="Hey! I'm Gonna Shoot you :D")
     avatar = models.ImageField(upload_to="media", default="defaultprofile.jpg")
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     followers = models.ManyToManyField(User, related_name="followers", null=True, blank=True)
