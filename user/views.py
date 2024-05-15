@@ -7,7 +7,7 @@ from django.forms import BaseModelForm
 from django.http import HttpRequest, HttpResponse
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import TemplateView, FormView, CreateView, ListView, View, UpdateView, DetailView, DeleteView
 from .models import UserProfile
 from user.models import Posts
@@ -180,7 +180,7 @@ class ViewFollower(LoginRequiredMixin, DetailView):
         return context
 
     def get_object(self, queryset=None):
-        userprofile = UserProfile.objects.get(user__username=self.kwargs.get("userid"))
+        userprofile = get_object_or_404(UserProfile, user__username=self.kwargs.get("userid"))
         return userprofile
     
 

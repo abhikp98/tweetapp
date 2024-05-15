@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-center vh-100">
+    <pre>
+    <h1 class="text-primary">404:(</h1>
+    <small><b>The page you are looking for is not found</b></small>
+    <a href="{% url 'feeds' %}" class="btn btn-primary mt-3">Return to Home</a>
+    </pre>
+</div>
+{% endblock %}

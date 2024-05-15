@@ -31,6 +31,6 @@ urlpatterns = [
     path('<slug>/tweet-view/', views.Tweetview.as_view(), name="viewtweet"),
     path('<slug>/delete-tweet/', views.DeleteTweet.as_view(), name='delete-tweet'),
     path('followers/', views.FollowersView.as_view(), name="followers"),
-    path('<userid>/', views.ViewFollower.as_view(), name="user-profile"),
+    path('users/<userid>/', views.ViewFollower.as_view(), name="user-profile"),
     path('FollowUnfollow/<userid>', views.FollowUnfollow.as_view(), name="connect"),
 ]
