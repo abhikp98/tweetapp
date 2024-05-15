@@ -132,7 +132,9 @@ class addLike(LoginRequiredMixin, DetailView):
         return redirect(self.request.META.get('HTTP_REFERER', '/feeds'))
     
 
-class Tweetview(DetailView):
+class Tweetview(LoginRequiredMixin, DetailView):
+    login_url = "/login/"
+    redirect_field_name = "login"
     model = Posts
     template_name = "tweet-details.html"
 
@@ -145,7 +147,9 @@ class DeleteTweet(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('profile')
 
 
-class FollowersView(DetailView):
+class FollowersView(LoginRequiredMixin, DetailView):
+    login_url = "/login/"
+    redirect_field_name = "login"
     model = UserProfile
     template_name = "followers.html"
 
@@ -160,7 +164,9 @@ class FollowersView(DetailView):
         return context
     
 
-class ViewFollower(DetailView):
+class ViewFollower(LoginRequiredMixin, DetailView):
+    login_url = "/login/"
+    redirect_field_name = "login"
     model = UserProfile
     template_name = "follower-profile.html"
     def get_context_data(self, **kwargs):
@@ -179,7 +185,9 @@ class ViewFollower(DetailView):
     
 
 
-class FollowUnfollow(DetailView):
+class FollowUnfollow(LoginRequiredMixin, DetailView):
+    login_url = "/login/"
+    redirect_field_name = "login"
     model = UserProfile
     def get(self, request, *args, **kwargs):
         userid = User.objects.get(username=kwargs.get('userid'))
